@@ -1,0 +1,71 @@
+
+In a Spring Boot Application, 
+
+- Java code or Spring Boot code
+- Front End (via HTML, JSP or Angular)
+- Database (MySQL, H2, Postgres)
+
+When we want to dockerise an application,
+we use a "base image" and we run commands on top of it
+
+Our Base image- tomcat:8.0.51-jre8-alpine
+tomcat server - it handles the front end
+jre8 - open jdk verion 8
+
+These two will collectively take care of my front end and backend
+
+For the databse, 
+
+We create another container in Kubernetes to handle the database. 
+
+To run this application on Kubernetes, we ran two containers.
+
+One container had the Spring Boot application. 
+	- Dockerise our application
+	- We need to create a war file or jar file (executable file)
+	- mvn clean install (this create the jar file in target folder)
+		Note: mvn is not installed by default on your machine, use apt-get install maven
+	- We need to create a docker file
+		- need to give the base image - tomcat....
+		- we need to give the COPY command
+	- We need to give the configuration (application.properties)
+		- spring.datasource.url = jdbc:mysql://${DB_HOSTNAME:localhost}:${DB_PORT:3306}/${DB_NAME:webappdb}?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+		  spring.datasource.username=${DB_USERNAME:root}
+                  spring.datasource.password=${DB_PASSWORD:redhat}
+		- If we look at, DB_HOSTNAME:localhost, here DB_HOSTNAME is the name of the variable and localhost is the value for the variable
+		- Create a secret to store the password
+			apiVersion: v1 
+				kind: Secret 
+				metadata:
+				  name: mysql-db-password
+				type: Opaque 
+				data:
+				  password: ZGJwYXNzd29yZDEx
+		- You need to refer to it,
+			fromValue:
+			  name: mysql-db-password
+			  value: password
+		- or you can skip this and give the password right away
+	
+
+Other container had database. /mnt/db
+	- MySQL container. 
+	- mkdir /mnt/db (worker node)
+	- Create a Persistent volume
+	- Create a Persistent volume claim
+	- Create a Deployment for MySQL
+	- Create a pod using YAML - it runs a single or multiple container images
+	- Create a ReplicaSet, we can replicate multiples pods. We can run multiples pods and it keeps it that way. (If I gave 3 pods to run, and I delete one, then a new pod will be created automatically)
+	- Create a Deployment. Deployment runs ReplicaSets. 
+	- Create a Service. It is just to expose to network. ClusterIP, NodePort, LoadBalancer. 
+	- Create a ConfigMap. It is basically configuration file for the container/pod, you can also give execution commands. 
+
+Steps to execute it:
+1. apply pv.yaml
+2. apply pvc.yaml
+3. apply database_deployment.yaml
+4. apply database_configmap.yaml
+5. apply database_service.yaml
+6. apply spring_boot_app.yaml
+7. apply spring_boot_app_service.yaml
+		
