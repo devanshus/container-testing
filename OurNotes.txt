@@ -1,0 +1,10 @@
+Code to WebApp
+https://github.com/gopal1409/webapp#azure-aks-user-management-webapp-demo
+
+Code to the Manifest for the above Application
+https://github.com/stacksimplify/azure-aks-kubernetes-masterclass/tree/master/05-Azure-Disks-for-AKS-Storage/05-03-UserMgmt-WebApp-with-MySQLDB
+
+How to dockerise a Spring MVC application? (Open in Incognito)
+https://medium.com/@asce4s/dockerize-spring-mvc-application-a9ffbd11eadb
+
+
